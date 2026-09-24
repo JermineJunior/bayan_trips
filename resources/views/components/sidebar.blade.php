@@ -52,6 +52,62 @@
                 icon="dashboard"
             />
 
+            @can('trips.view')
+                <x-sidebar-link
+                    href="{{ route('admin.trips.index') }}"
+                    :active="request()->routeIs('admin.trips.*')"
+                    label="الرحلات"
+                    icon="truck"
+                />
+            @endcan
+
+            {{-- Master data section: shown when the user can view at least one
+                 of the four master-data screens. --}}
+            @canany(['vehicles.view', 'drivers.view', 'customers.view', 'trip_types.view'])
+                <p
+                    x-show="mobileOpen || !collapsed"
+                    class="sidebar-label px-3 pb-1 pt-3 text-xs font-semibold text-muted-foreground/70"
+                >
+                    البيانات الأساسية
+                </p>
+            @endcanany
+
+            @can('vehicles.view')
+                <x-sidebar-link
+                    href="{{ route('admin.vehicles.index') }}"
+                    :active="request()->routeIs('admin.vehicles.*')"
+                    label="المركبات"
+                    icon="car"
+                />
+            @endcan
+
+            @can('drivers.view')
+                <x-sidebar-link
+                    href="{{ route('admin.drivers.index') }}"
+                    :active="request()->routeIs('admin.drivers.*')"
+                    label="السائقون"
+                    icon="id-card"
+                />
+            @endcan
+
+            @can('customers.view')
+                <x-sidebar-link
+                    href="{{ route('admin.customers.index') }}"
+                    :active="request()->routeIs('admin.customers.*')"
+                    label="العملاء"
+                    icon="contact"
+                />
+            @endcan
+
+            @can('trip_types.view')
+                <x-sidebar-link
+                    href="{{ route('admin.trip-types.index') }}"
+                    :active="request()->routeIs('admin.trip-types.*')"
+                    label="أنواع الرحلات"
+                    icon="route"
+                />
+            @endcan
+
             @can('users.view')
                 <x-sidebar-link
                     href="{{ route('admin.users.index') }}"

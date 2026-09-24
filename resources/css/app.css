@@ -228,6 +228,11 @@
         background-repeat: no-repeat;
     }
 
+    /* Pins a unit suffix (e.g. %) at the inline-end of an .input/.textarea. */
+    .input-suffix {
+        @apply pe-10;
+    }
+
     [data-theme='dark'] .select {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239a9ca6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     }
@@ -262,6 +267,11 @@
 
     .card {
         @apply rounded-lg border border-border bg-surface shadow-xs;
+    }
+
+    /* Accent variant for featured tiles (e.g. bento dashboard). */
+    .card-primary {
+        @apply border-primary bg-primary text-primary-foreground shadow-xs;
     }
 
     /* ---- Tables -------------------------------------------------------- */

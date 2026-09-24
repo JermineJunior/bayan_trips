@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionSeeder::class,
             RoleSeeder::class,
+            TripTypeSeeder::class,
         ]);
 
         // Users are only ever created by an admin (user management step).

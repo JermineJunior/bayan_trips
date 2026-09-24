@@ -41,4 +41,39 @@ return [
         'settings.edit',
     ],
 
+    'vehicles' => [
+        'vehicles.view',
+        'vehicles.create',
+        'vehicles.edit',
+        'vehicles.delete',
+    ],
+
+    'drivers' => [
+        'drivers.view',
+        'drivers.create',
+        'drivers.edit',
+        'drivers.delete',
+    ],
+
+    'customers' => [
+        'customers.view',
+        'customers.create',
+        'customers.edit',
+        'customers.delete',
+    ],
+
+    'trip_types' => [
+        'trip_types.view',
+        'trip_types.create',
+        'trip_types.edit',
+        'trip_types.delete',
+    ],
+
+    'trips' => [
+        'trips.view',
+        'trips.create',
+        'trips.edit',
+        'trips.delete',
+    ],
+
 ];

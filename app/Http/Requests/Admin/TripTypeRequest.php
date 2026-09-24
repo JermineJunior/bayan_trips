@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class TripTypeRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    public function rules(): array
+    {
+        $tripType = $this->route('tripType');
+
+        return [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('trip_types', 'name')->ignore($tripType?->id),
+            ],
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'اسم نوع الرحلة مطلوب.',
+            'name.max' => 'يجب ألا يتجاوز اسم نوع الرحلة :max حرفًا.',
+            'name.unique' => 'يوجد نوع رحلة بهذا الاسم بالفعل.',
+        ];
+    }
+}
