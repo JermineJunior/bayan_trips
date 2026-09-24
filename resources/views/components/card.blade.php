@@ -1,6 +1,18 @@
-@props(['title'])
+@props([
+    'title' => null,
+    'description' => null,
+    'padding' => true,
+])
 
-<div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
-    <h2 class="font-semibold text-foreground">{{ $title }}</h2>
-    <p class="mt-2 text-sm text-muted-foreground">{{ $slot }}</p>
+<div class="card">
+    @if ($title)
+        <div class="border-b border-border px-6 py-5">
+            <h2 class="section-title">{{ $title }}</h2>
+            @if ($description)
+                <p class="section-desc">{{ $description }}</p>
+            @endif
+        </div>
+    @endif
+
+    <div class="{{ $padding ? 'px-6 py-6' : '' }}">{{ $slot }}</div>
 </div>

@@ -3,8 +3,6 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
-
-
 /*
 |--------------------------------------------------------------------------
 | Theme tokens
@@ -38,37 +36,58 @@
     --color-accent-foreground: var(--app-accent-foreground);
     --color-primary: var(--app-primary);
     --color-primary-foreground: var(--app-primary-foreground);
+
+    --color-success: var(--app-success);
+    --color-success-foreground: var(--app-success-foreground);
+    --color-warning: var(--app-warning);
+    --color-warning-foreground: var(--app-warning-foreground);
+    --color-danger: var(--app-danger);
+    --color-danger-foreground: var(--app-danger-foreground);
 }
 
 :root,
 [data-theme='light'] {
     color-scheme: light;
 
-    --app-background: #f9fafb;
+    --app-background: #f6f6f4;
     --app-surface: #ffffff;
-    --app-foreground: #111827;
-    --app-muted: #f3f4f6;
-    --app-muted-foreground: #6b7280;
-    --app-border: #e5e7eb;
-    --app-accent: #eff6ff;
-    --app-accent-foreground: #1d4ed8;
-    --app-primary: #2563eb;
+    --app-foreground: #1a1b1e;
+    --app-muted: #eeefeb;
+    --app-muted-foreground: #6b6d6a;
+    --app-border: #e3e4df;
+    --app-accent: #eef2fb;
+    --app-accent-foreground: #1e4bd8;
+    --app-primary: #2148c9;
     --app-primary-foreground: #ffffff;
+
+    --app-success: #138a49;
+    --app-success-foreground: #ffffff;
+    --app-warning: #a16207;
+    --app-warning-foreground: #ffffff;
+    --app-danger: #c0392b;
+    --app-danger-foreground: #ffffff;
 }
 
 [data-theme='dark'] {
     color-scheme: dark;
 
-    --app-background: #0f172a;
-    --app-surface: #1e293b;
-    --app-foreground: #f1f5f9;
-    --app-muted: #334155;
-    --app-muted-foreground: #94a3b8;
-    --app-border: #334155;
-    --app-accent: #1e3a8a;
-    --app-accent-foreground: #bfdbfe;
-    --app-primary: #3b82f6;
+    --app-background: #16171c;
+    --app-surface: #1e2026;
+    --app-foreground: #e8e9ec;
+    --app-muted: #26282f;
+    --app-muted-foreground: #9a9ca6;
+    --app-border: #2e313a;
+    --app-accent: #1b2a55;
+    --app-accent-foreground: #8fb0ff;
+    --app-primary: #5a7bf0;
     --app-primary-foreground: #ffffff;
+
+    --app-success: #3fae6a;
+    --app-success-foreground: #062110;
+    --app-warning: #e5b13b;
+    --app-warning-foreground: #1c1203;
+    --app-danger: #e0655a;
+    --app-danger-foreground: #1f0a08;
 }
 
 /*
@@ -99,4 +118,271 @@
 
 [x-cloak] {
     display: none !important;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Component system
+|--------------------------------------------------------------------------
+|
+| Centralized styling for the reusable atoms used across every screen.
+| Individual pages compose these classes rather than restating utilities.
+|
+*/
+
+@layer components {
+    /* ---- Typography -------------------------------------------------- */
+
+    .page-title {
+        @apply text-[1.375rem] font-bold leading-8 tracking-tight text-foreground;
+    }
+
+    .page-desc {
+        @apply mt-1 text-sm leading-6 text-muted-foreground;
+    }
+
+    .section-title {
+        @apply text-base font-semibold text-foreground;
+    }
+
+    .section-desc {
+        @apply mt-1 text-sm leading-6 text-muted-foreground;
+    }
+
+    .label {
+        @apply mb-1.5 block text-sm font-medium text-foreground;
+    }
+
+    .hint {
+        @apply mt-1.5 text-xs leading-5 text-muted-foreground;
+    }
+
+    .field-error {
+        @apply mt-1.5 text-sm text-danger;
+    }
+
+    /* ---- Layout helpers --------------------------------------------- */
+
+    .content-container {
+        @apply mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8;
+    }
+
+    .form-page {
+        @apply mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 lg:px-8;
+    }
+
+    /* ---- Buttons ------------------------------------------------------ */
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-150;
+        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-background;
+        @apply disabled:pointer-events-none disabled:opacity-60;
+    }
+
+    .btn-primary {
+        @apply bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 active:bg-primary/80;
+    }
+
+    .btn-secondary {
+        @apply border border-border bg-surface text-foreground shadow-sm hover:bg-muted hover:border-foreground/15 active:bg-muted/70;
+    }
+
+    .btn-ghost {
+        @apply text-muted-foreground hover:bg-muted hover:text-foreground;
+    }
+
+    .btn-danger {
+        @apply bg-danger text-danger-foreground shadow-sm hover:bg-danger/90 active:bg-danger/80;
+    }
+
+    .btn-danger-ghost {
+        @apply border border-danger/25 text-danger hover:bg-danger/10;
+    }
+
+    .btn-sm {
+        @apply px-2.5 py-1.5 text-xs;
+    }
+
+    .btn-icon {
+        @apply size-8 p-0 shadow-none;
+    }
+
+    /* ---- Form controls ------------------------------------------------ */
+
+    .input,
+    .textarea,
+    .select {
+        @apply block w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground shadow-xs;
+        @apply transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-muted-foreground;
+        @apply focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+    }
+
+    .textarea {
+        @apply min-h-24 resize-y leading-6;
+    }
+
+    .select {
+        @apply appearance-none py-2 pe-9;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6d6a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-position: left 0.75rem center;
+        background-repeat: no-repeat;
+    }
+
+    [data-theme='dark'] .select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239a9ca6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    }
+
+    /* ---- Badges -------------------------------------------------------- */
+
+    .badge {
+        @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium leading-5;
+    }
+
+    .badge-neutral {
+        @apply bg-muted text-muted-foreground;
+    }
+
+    .badge-primary {
+        @apply bg-primary/10 text-primary;
+    }
+
+    .badge-success {
+        @apply bg-success/12 text-success;
+    }
+
+    .badge-warning {
+        @apply bg-warning/12 text-warning;
+    }
+
+    .badge-danger {
+        @apply bg-danger/12 text-danger;
+    }
+
+    /* ---- Cards --------------------------------------------------------- */
+
+    .card {
+        @apply rounded-lg border border-border bg-surface shadow-xs;
+    }
+
+    /* ---- Tables -------------------------------------------------------- */
+
+    .table-wrap {
+        @apply overflow-x-auto rounded-lg border border-border bg-surface shadow-xs;
+    }
+
+    .table {
+        @apply w-full min-w-max text-sm;
+    }
+
+    .table th {
+        @apply border-b border-border bg-muted/40 px-4 py-2.5 text-start text-xs font-medium text-muted-foreground whitespace-nowrap;
+    }
+
+    .table td {
+        @apply px-4 py-3 align-middle;
+    }
+
+    .table tbody tr {
+        @apply border-b border-border last:border-b-0 transition-colors hover:bg-muted/40;
+    }
+
+    /* ---- Dropdown menu items ------------------------------------------- */
+
+    .menu-item {
+        @apply flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-start text-sm text-foreground transition-colors hover:bg-muted;
+    }
+
+    .menu-item-danger {
+        @apply text-danger hover:bg-danger/10;
+    }
+
+    /* ---- Alerts --------------------------------------------------------- */
+
+    .alert {
+        @apply flex items-start gap-3 rounded-lg border p-4 text-sm leading-6;
+    }
+
+    .alert > svg {
+        @apply mt-0.5 size-5 shrink-0;
+    }
+
+    .alert-title {
+        @apply font-semibold;
+    }
+
+    .alert-success {
+        @apply border-success/25 bg-success/10 text-success;
+    }
+
+    .alert-danger {
+        @apply border-danger/25 bg-danger/10 text-danger;
+    }
+
+    .alert-warning {
+        @apply border-warning/25 bg-warning/10 text-warning;
+    }
+
+    .alert-info {
+        @apply border-primary/20 bg-primary/10 text-primary;
+    }
+
+    /* ---- Section panel (forms / settings) ------------------------------- */
+
+    .panel {
+        @apply rounded-lg border border-border bg-surface shadow-xs;
+    }
+
+    .panel-head {
+        @apply border-b border-border px-6 py-5 sm:px-8;
+    }
+
+    .panel-body {
+        @apply px-6 py-6 sm:px-8;
+    }
+
+    /* ---- Link ------------------------------------------------------------ */
+
+    .link {
+        @apply font-medium text-primary transition-colors hover:text-primary/80;
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Mobile sidebar drawer
+|--------------------------------------------------------------------------
+|
+| On screens below lg the sidebar becomes a fixed drawer pinned to the
+| start edge (right in this RTL app). It is translated off-screen by
+| default and revealed by Alpine (open). The transform is physical
+| since the app is RTL-only; desktop re-enables sticky positioning and
+| applies the collapsible width (16rem / 4rem) via the `collapsed` class.
+|
+*/
+
+.sidebar-drawer {
+    width: 16rem;
+    transform: translateX(100%);
+    transition: transform 200ms ease;
+}
+
+.sidebar-drawer.open {
+    transform: translateX(0);
+}
+
+@media (min-width: 64rem) {
+    .sidebar-drawer {
+        transform: none;
+        width: 16rem;
+    }
+
+    .sidebar-drawer.collapsed,
+    html[data-sidebar-collapsed="1"] .sidebar-drawer {
+        width: 4rem;
+    }
+
+    .sidebar-drawer.collapsed .sidebar-label,
+    html[data-sidebar-collapsed="1"] .sidebar-drawer .sidebar-label {
+        display: none;
+    }
 }

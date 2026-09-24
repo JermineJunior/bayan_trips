@@ -8,6 +8,10 @@ export default function () {
             }
         })(),
 
+        get mobileOpen() {
+            return this.$store.ui.sidebarOpen;
+        },
+
         toggle() {
             this.collapsed = !this.collapsed;
 

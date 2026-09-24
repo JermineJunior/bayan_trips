@@ -1,57 +1,56 @@
 @props(['user'])
 
-<div x-data="{ confirm: false }" class="flex flex-wrap items-center gap-2">
-    @if ($user->is_active)
-        @can('deactivate', $user)
-            <button
-                type="button"
-                @click="confirm = true"
-                class="rounded-md border border-amber-200 px-3 py-1.5 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-50"
-            >
-                تعطيل
-            </button>
-        @endcan
-    @else
-        @can('activate', $user)
-            <button
-                type="button"
-                @click="confirm = true"
-                class="rounded-md border border-green-200 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors hover:bg-green-50"
-            >
-                تفعيل
-            </button>
-        @endcan
-    @endif
+@php
+    $activating = ! $user->is_active;
+    $canToggle = $activating
+        ? auth()->user()->can('activate', $user)
+        : auth()->user()->can('deactivate', $user);
+@endphp
 
-    <span
-        x-show="confirm"
-        x-cloak
-        class="flex flex-wrap items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-800"
-    >
-        <span>
-            {{ $user->is_active ? 'هل تريد تعطيل' : 'هل تريد تفعيل' }} حساب {{ $user->name }}؟
-        </span>
-
-        <form
+@if ($canToggle)
+    @if ($activating)
+        <x-confirm-modal
+            :action="route('admin.users.activate', $user)"
             method="POST"
-            action="{{ $user->is_active ? route('admin.users.deactivate', $user) : route('admin.users.activate', $user) }}"
-            class="inline"
+            tone="success"
+            :title="'تفعيل حساب ' . $user->name"
+            description="سيتم استعادة الوصول إلى الحساب فورًا ويمكن لصاحبه تسجيل الدخول مجددًا."
+            confirm-icon="user-check"
+            confirm-label="تفعيل"
         >
-            @csrf
-            <button
-                type="submit"
-                class="rounded-md bg-amber-600 px-2 py-1 text-xs font-medium text-white transition-colors hover:bg-amber-700"
-            >
-                {{ $user->is_active ? 'نعم، تعطيل' : 'نعم، تفعيل' }}
-            </button>
-        </form>
-
-        <button
-            type="button"
-            @click="confirm = false"
-            class="rounded-md border border-amber-200 px-2 py-1 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-100"
+            <x-slot:trigger>
+                <button
+                    type="button"
+                    @click="open = true"
+                    class="btn btn-ghost btn-icon text-success hover:bg-success/10 hover:text-success"
+                    title="تفعيل الحساب"
+                    aria-label="تفعيل {{ $user->name }}"
+                >
+                    <x-icon name="user-check" class="size-4" />
+                </button>
+            </x-slot:trigger>
+        </x-confirm-modal>
+    @else
+        <x-confirm-modal
+            :action="route('admin.users.deactivate', $user)"
+            method="POST"
+            tone="warning"
+            :title="'تعطيل حساب ' . $user->name"
+            description="سيُمنع صاحب الحساب من تسجيل الدخول فورًا دون حذف بياناته. يمكن تفعيل الحساب في أي وقت."
+            confirm-icon="user-x"
+            confirm-label="تعطيل"
         >
-            إلغاء
-        </button>
-    </span>
-</div>
+            <x-slot:trigger>
+                <button
+                    type="button"
+                    @click="open = true"
+                    class="btn btn-ghost btn-icon text-warning hover:bg-warning/10 hover:text-warning"
+                    title="تعطيل الحساب"
+                    aria-label="تعطيل {{ $user->name }}"
+                >
+                    <x-icon name="user-x" class="size-4" />
+                </button>
+            </x-slot:trigger>
+        </x-confirm-modal>
+    @endif
+@endif

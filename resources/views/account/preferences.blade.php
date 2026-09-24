@@ -1,87 +1,93 @@
 @extends('layouts.app')
 
-@section('title', 'التفضيلات')
+@section('title', 'تفضيلاتي')
 
 @section('content')
-    <div class="mx-auto max-w-7xl px-4 py-8">
-        <div class="mb-6">
-            <a
-                href="{{ route('home') }}"
-                class="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-                &larr; العودة إلى الرئيسية
-            </a>
-            <h1 class="mt-2 text-2xl font-bold tracking-tight text-foreground">
-                تفضيلاتي
-            </h1>
-            <p class="mt-1 text-sm text-muted-foreground">
-                تُطبق هذه التفضيلات على حسابك أنت فقط ولا تؤثر على المستخدمين الآخرين.
-            </p>
-        </div>
+    <div class="form-page">
+        <x-page-header
+            title="تفضيلاتي"
+            description="تُطبق هذه التفضيلات على حسابك أنت فقط ولا تؤثر على المستخدمين الآخرين."
+        />
+
+        @if (session('status'))
+            <x-alert class="mt-6" :dismissible="true">
+                {{ session('status') }}
+            </x-alert>
+        @endif
 
         <form
             method="POST"
             action="{{ route('account.preferences.update') }}"
-            class="max-w-3xl space-y-6"
+            class="mt-8 space-y-6"
+            x-data="{ saving: false }"
+            @submit="saving = true"
         >
             @csrf
             @method('PUT')
 
-            <div>
-                <span class="mb-1 block text-sm font-medium text-foreground">حجم الخط</span>
+            <section class="card">
+                <header class="panel-head">
+                    <h2 class="section-title">المظهر</h2>
+                    <p class="section-desc">اختيار الوضع الفاتح أو الداكن — يُحفظ على هذا الجهاز.</p>
+                </header>
 
-                <div class="flex flex-wrap gap-3">
-                    <label class="flex cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm text-foreground has-[:checked]:border-primary has-[:checked]:ring-1 has-[:checked]:ring-primary">
-                        <input
-                            type="radio"
-                            name="font_size"
-                            value="small"
-                            @checked(old('font_size', $fontSize) === 'small')
-                            class="accent-primary"
-                        >
-                        صغير
-                    </label>
-
-                    <label class="flex cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm text-foreground has-[:checked]:border-primary has-[:checked]:ring-1 has-[:checked]:ring-primary">
-                        <input
-                            type="radio"
-                            name="font_size"
-                            value="default"
-                            @checked(old('font_size', $fontSize) === 'default')
-                            class="accent-primary"
-                        >
-                        افتراضي
-                    </label>
-
-                    <label class="flex cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm text-foreground has-[:checked]:border-primary has-[:checked]:ring-1 has-[:checked]:ring-primary">
-                        <input
-                            type="radio"
-                            name="font_size"
-                            value="large"
-                            @checked(old('font_size', $fontSize) === 'large')
-                            class="accent-primary"
-                        >
-                        كبير
-                    </label>
+                <div class="panel-body">
+                    <span class="mb-2 block text-sm font-medium text-foreground">الوضع</span>
+                    <div class="max-w-xs">
+                        <x-theme-switcher variant="dropdown" />
+                    </div>
                 </div>
+            </section>
 
-                @error('font_size')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
+            <section class="card">
+                <header class="panel-head">
+                    <h2 class="section-title">الخط</h2>
+                    <p class="section-desc">مقياس الخط العام في كل شاشات التطبيق.</p>
+                </header>
 
-            <div class="flex items-center gap-3">
-                <button
-                    type="submit"
-                    class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                >
-                    حفظ التفضيلات
+                <div class="panel-body">
+                    <span class="mb-1.5 block text-sm font-medium text-foreground">حجم الخط</span>
+
+                    <fieldset>
+                        <legend class="sr-only">حجم الخط</legend>
+                        <div class="grid grid-cols-3 gap-2 sm:max-w-md">
+                            @php
+                                $options = [
+                                    'small' => ['صغير', '90%'],
+                                    'default' => ['افتراضي', '100%'],
+                                    'large' => ['كبير', '115%'],
+                                ];
+                            @endphp
+
+                            @foreach ($options as $value => [$label, $scale])
+                                <label class="cursor-pointer rounded-lg border border-border bg-surface px-3 py-3 text-center transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:ring-1 has-[:checked]:ring-primary">
+                                    <input
+                                        type="radio"
+                                        name="font_size"
+                                        value="{{ $value }}"
+                                        @checked(old('font_size', $fontSize) === $value)
+                                        class="sr-only"
+                                    >
+                                    <span class="block text-sm font-medium text-foreground">{{ $label }}</span>
+                                    <span class="mt-0.5 block text-xs text-muted-foreground" dir="ltr">{{ $scale }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </fieldset>
+
+                    @error('font_size')
+                        <p class="field-error">{{ $message }}</p>
+                    @enderror
+                </div>
+            </section>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" class="btn btn-primary" :disabled="saving">
+                    <x-icon name="check" class="size-4" />
+                    <span x-text="saving ? 'جارٍ الحفظ…' : 'حفظ التفضيلات'">حفظ التفضيلات</span>
                 </button>
 
-                <a
-                    href="{{ route('home') }}"
-                    class="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                >
+                <a href="{{ route('home') }}" class="btn btn-secondary">
                     إلغاء
                 </a>
             </div>

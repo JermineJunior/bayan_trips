@@ -3,115 +3,136 @@
 @section('title', 'المستخدمون')
 
 @section('content')
-    <div class="mx-auto max-w-7xl px-4 py-8">
-        <div class="mb-6 flex items-center justify-between gap-4">
-            <h1 class="text-2xl font-bold tracking-tight text-foreground">
-                إدارة المستخدمين
-            </h1>
-
+    <div class="content-container">
+        <x-page-header
+            title="المستخدمون"
+            :description="number_format($users->total()) . ' مستخدم مسجل في النظام'"
+        >
             @can('create', App\Models\User::class)
-                <a
-                    href="{{ route('admin.users.create') }}"
-                    class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                >
-                    إنشاء مستخدم
-                </a>
+                <x-slot:actions>
+                    <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+                        <x-icon name="user-plus" class="size-4" />
+                        إضافة مستخدم
+                    </a>
+                </x-slot:actions>
             @endcan
-        </div>
+        </x-page-header>
 
         @if (session('status'))
-            <div class="mb-6 rounded-md border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+            <x-alert class="mt-6" :dismissible="true">
                 {{ session('status') }}
-            </div>
+            </x-alert>
         @endif
 
-        <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
-            <table class="min-w-full divide-y divide-border text-sm">
-                <thead>
-                    <tr class="text-xs uppercase tracking-wide text-muted-foreground">
-                        <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                            المستخدم
-                        </th>
-                        <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                            اسم المستخدم
-                        </th>
-                        <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                            الدور
-                        </th>
-                        <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                            الحالة
-                        </th>
-                        <th class="bg-muted/50 px-4 py-3 text-end font-medium">
-                            إجراءات
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-border">
-                    @forelse ($users as $user)
-                        <tr>
-                            <td class="px-4 py-3 font-medium text-foreground">
-                                {{ $user->name }}
-                            </td>
-                            <td class="px-4 py-3 text-muted-foreground">
-                                {{ $user->username }}
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="rounded-md bg-muted px-2 py-1 text-xs text-foreground">
-                                    {{ $user->roles->first()?->name ?? '—' }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="rounded-md px-2 py-1 text-xs font-medium {{ $user->is_active ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600' }}">
-                                    {{ $user->is_active ? 'نشط' : 'معطل' }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex flex-wrap items-center justify-end gap-2">
-                                    @can('update', $user)
-                                        <a
-                                            href="{{ route('admin.users.edit', $user) }}"
-                                            class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-                                        >
-                                            تعديل
-                                        </a>
-                                    @endcan
+        <div class="mt-8">
+            @if ($users->isNotEmpty())
+                <div class="table-wrap">
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>المستخدم</th>
+                                    <th>الدور</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ الإنشاء</th>
+                                    <th class="text-end">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($users as $user)
+                                    <tr>
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
+                                                    {{ mb_substr($user->name, 0, 1) }}
+                                                </span>
+                                                <div class="min-w-0">
+                                                    <p class="truncate font-medium text-foreground">{{ $user->name }}</p>
+                                                    <p class="truncate text-xs text-muted-foreground">{{ $user->username }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-primary">{{ $user->roles->first()?->name ?? '—' }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge {{ $user->is_active ? 'badge-success' : 'badge-danger' }}">
+                                                {{ $user->is_active ? 'نشط' : 'معطل' }}
+                                            </span>
+                                        </td>
+                                        <td class="whitespace-nowrap text-muted-foreground">
+                                            {{ $user->created_at->translatedFormat('j F Y') }}
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center justify-end gap-0.5">
+                                                @can('update', $user)
+                                                    <a
+                                                        href="{{ route('admin.users.edit', $user) }}"
+                                                        class="btn btn-ghost btn-icon"
+                                                        title="تعديل المستخدم"
+                                                        aria-label="تعديل {{ $user->name }}"
+                                                    >
+                                                        <x-icon name="pencil" class="size-4" />
+                                                    </a>
+                                                @endcan
 
-                                    <x-user-status-toggle :user="$user" />
+                                                <x-user-status-toggle :user="$user" />
 
-                                    @can('delete', $user)
-                                        <form
-                                            method="POST"
-                                            action="{{ route('admin.users.destroy', $user) }}"
-                                            onsubmit="return confirm('هل تريد حذف هذا المستخدم؟')"
-                                        >
-                                            @csrf
-                                            @method('DELETE')
-                                            <button
-                                                type="submit"
-                                                class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
-                                            >
-                                                حذف
-                                            </button>
-                                        </form>
-                                    @endcan
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
-                                لا يوجد مستخدمون بعد.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                                                @can('delete', $user)
+                                                    <x-confirm-modal
+                                                        :action="route('admin.users.destroy', $user)"
+                                                        method="DELETE"
+                                                        tone="danger"
+                                                        confirm-icon="trash"
+                                                        :title="'حذف المستخدم ' . $user->name"
+                                                        :description="'سيتم حذف حساب المستخدم نهائيًا مع كل بياناته. لا يمكن التراجع عن هذا الإجراء.'"
+                                                        confirm-label="حذف"
+                                                    >
+                                                        <x-slot:trigger>
+                                                            <button
+                                                                type="button"
+                                                                @click="open = true"
+                                                                class="btn btn-ghost btn-icon text-danger hover:bg-danger/10 hover:text-danger"
+                                                                title="حذف المستخدم"
+                                                                aria-label="حذف {{ $user->name }}"
+                                                            >
+                                                                <x-icon name="trash" class="size-4" />
+                                                            </button>
+                                                        </x-slot:trigger>
+                                                    </x-confirm-modal>
+                                                @endcan
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if ($users->hasPages())
+                        <div class="border-t border-border px-4 py-3">
+                            {{ $users->links() }}
+                        </div>
+                    @endif
+                </div>
+            @else
+                <div class="table-wrap">
+                    <x-empty-state
+                        icon="users"
+                        title="لا يوجد مستخدمون بعد"
+                        description="سيظهر المستخدمون هنا بمجرد إنشائهم، ويمكنك إضافة أول مستخدم الآن."
+                    >
+                        @can('create', App\Models\User::class)
+                            <x-slot:action>
+                                <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+                                    <x-icon name="user-plus" class="size-4" />
+                                    إضافة مستخدم
+                                </a>
+                            </x-slot:action>
+                        @endcan
+                    </x-empty-state>
+                </div>
+            @endif
         </div>
-
-        @if ($users->hasPages())
-            <div class="mt-6">
-                {{ $users->links() }}
-            </div>
-        @endif
     </div>
 @endsection

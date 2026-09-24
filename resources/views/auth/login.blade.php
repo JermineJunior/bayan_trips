@@ -3,32 +3,30 @@
 @section('title', 'تسجيل الدخول')
 
 @section('content')
-    <div class="text-center">
-        <h1 class="text-2xl font-bold tracking-tight text-foreground">
-            سجّل الدخول إلى حسابك
-        </h1>
-        <p class="mt-2 text-sm text-muted-foreground">
-            استخدم اسم المستخدم وكلمة المرور للمتابعة.
-        </p>
+    <div>
+<h1 class="text-xl font-bold text-foreground sm:text-2xl">
+                    سجّل الدخول إلى حسابك
+                </h1>
+                <p class="mt-1.5 text-sm leading-6 text-muted-foreground">
+                    استخدم اسم المستخدم وكلمة المرور للمتابعة.
+                </p>
     </div>
 
     @if ($errors->any())
-        <div class="mt-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <x-alert type="danger" class="mt-6">
             <ul class="list-inside space-y-1">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
-        </div>
+        </x-alert>
     @endif
 
-    <form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4">
+    <form method="POST" action="{{ route('login') }}" class="mt-7 space-y-5">
         @csrf
 
         <div>
-            <label for="username" class="mb-1 block text-sm font-medium text-foreground">
-                اسم المستخدم
-            </label>
+            <label for="username" class="label">اسم المستخدم</label>
             <input
                 id="username"
                 name="username"
@@ -37,41 +35,42 @@
                 required
                 autofocus
                 autocomplete="username"
-                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                dir="ltr"
+                class="input"
             >
         </div>
 
         <div>
-            <label for="password" class="mb-1 block text-sm font-medium text-foreground">
-                كلمة المرور
-            </label>
+            <label for="password" class="label">كلمة المرور</label>
             <input
                 id="password"
                 name="password"
                 type="password"
                 required
                 autocomplete="current-password"
-                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                dir="ltr"
+                class="input"
             >
         </div>
 
-        <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center">
             <label for="remember" class="flex items-center gap-2 text-sm text-muted-foreground">
                 <input
                     id="remember"
                     name="remember"
                     type="checkbox"
-                    class="size-4 rounded border-border text-primary focus:ring-primary"
+                    class="size-4 rounded border-border accent-primary"
                 >
                 تذكرني
             </label>
         </div>
 
-        <button
-            type="submit"
-            class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-        >
+        <button type="submit" class="btn btn-primary w-full py-2.5">
             تسجيل الدخول
         </button>
     </form>
+
+    <p class="mt-6 text-center text-xs leading-5 text-muted-foreground">
+        لا تملك حسابًا؟ تواصل مع مسؤول النظام لإنشاء حساب.
+    </p>
 @endsection

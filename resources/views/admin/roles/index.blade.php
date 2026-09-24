@@ -3,93 +3,121 @@
 @section('title', 'الأدوار')
 
 @section('content')
-    <div class="mx-auto max-w-7xl px-4 py-8">
-        <div class="mb-6 flex items-center justify-between gap-4">
-            <h1 class="text-2xl font-bold tracking-tight text-foreground">
-                إدارة الأدوار
-            </h1>
-
+    <div class="content-container">
+        <x-page-header
+            title="الأدوار"
+            :description="'تحكم بصلاحيات المستخدمين عبر الأدوار.'"
+        >
             @can('create', Spatie\Permission\Models\Role::class)
-                <a
-                    href="{{ route('admin.roles.create') }}"
-                    class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                >
-                    إنشاء دور
-                </a>
+                <x-slot:actions>
+                    <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">
+                        <x-icon name="plus" class="size-4" />
+                        إنشاء دور
+                    </a>
+                </x-slot:actions>
             @endcan
-        </div>
+        </x-page-header>
 
         @if (session('status'))
-            <div class="mb-6 rounded-md border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+            <x-alert class="mt-6" :dismissible="true">
                 {{ session('status') }}
-            </div>
+            </x-alert>
         @endif
 
-        <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
-            <table class="min-w-full divide-y divide-border text-sm">
-                <thead>
-                    <tr class="text-xs uppercase tracking-wide text-muted-foreground">
-                        <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                            الدور
-                        </th>
-                        <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                            الصلاحيات
-                        </th>
-                        <th class="bg-muted/50 px-4 py-3 text-end font-medium">
-                            إجراءات
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-border">
-                    @forelse ($roles as $role)
-                        <tr>
-                            <td class="px-4 py-3 font-medium text-foreground">
-                                {{ $role->name }}
-                            </td>
-                            <td class="px-4 py-3 text-muted-foreground">
-                                {{ $role->permissions_count }} صلاحية
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center justify-end gap-2">
-                                    @can('update', $role)
-                                        <a
-                                            href="{{ route('admin.roles.edit', $role) }}"
-                                            class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-                                        >
-                                            تعديل دور
-                                        </a>
-                                    @endcan
+        <div class="mt-8">
+            @if ($roles->isNotEmpty())
+                <div class="table-wrap">
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>الدور</th>
+                                    <th>الصلاحيات</th>
+                                    <th>المستخدمون</th>
+                                    <th class="text-end">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($roles as $role)
+                                    <tr>
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                                                    <x-icon name="roles" class="size-4" />
+                                                </span>
+                                                <span class="font-medium text-foreground">{{ $role->name }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-neutral">{{ $role->permissions_count }} صلاحية</span>
+                                        </td>
+                                        <td class="text-muted-foreground">
+                                            {{ $role->users_count ?? 0 }} مستخدم
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center justify-end gap-0.5">
+                                                @can('update', $role)
+                                                    <a
+                                                        href="{{ route('admin.roles.edit', $role) }}"
+                                                        class="btn btn-ghost btn-icon"
+                                                        title="تعديل الدور"
+                                                        aria-label="تعديل {{ $role->name }}"
+                                                    >
+                                                        <x-icon name="pencil" class="size-4" />
+                                                    </a>
+                                                @endcan
 
-                                    @can('delete', $role)
-                                    @if (!auth()->user()->hasRole($role)) <!-- prevent deleting role if user has it (admin) -->
-                                        <form
-                                            method="POST"
-                                            action="{{ route('admin.roles.destroy', $role) }}"
-                                            onsubmit="return confirm('هل تريد حذف هذا الدور؟')"
-                                        >
-                                            @csrf
-                                            @method('DELETE')
-                                            <button
-                                                type="submit"
-                                                class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
-                                            >
-                                                حذف
-                                            </button>
-                                        </form>
-                                    @endif
-                                    @endcan
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="px-4 py-8 text-center text-muted-foreground">
-                                لا توجد أدوار بعد.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                                                @can('delete', $role)
+                                                    @if (! auth()->user()->hasRole($role))
+                                                        <x-confirm-modal
+                                                            :action="route('admin.roles.destroy', $role)"
+                                                            method="DELETE"
+                                                            tone="danger"
+                                                            confirm-icon="trash"
+                                                            :title="'حذف الدور ' . $role->name"
+                                                            :description="'سيتم حذف هذا الدور نهائيًا. لن يُحذف المستخدمون المرتبطون به لكنهم سيفقدون صلاحياته.'"
+                                                            confirm-label="حذف"
+                                                        >
+                                                            <x-slot:trigger>
+                                                                <button
+                                                                    type="button"
+                                                                    @click="open = true"
+                                                                    class="btn btn-ghost btn-icon text-danger hover:bg-danger/10 hover:text-danger"
+                                                                    title="حذف الدور"
+                                                                    aria-label="حذف {{ $role->name }}"
+                                                                >
+                                                                    <x-icon name="trash" class="size-4" />
+                                                                </button>
+                                                            </x-slot:trigger>
+                                                        </x-confirm-modal>
+                                                    @endif
+                                                @endcan
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @else
+                <div class="table-wrap">
+                    <x-empty-state
+                        icon="roles"
+                        title="لا توجد أدوار بعد"
+                        description="ستظهر الأدوار هنا بمجرد إنشائها، ويمكنك إنشاء أول دور لتنظيم الصلاحيات."
+                    >
+                        @can('create', Spatie\Permission\Models\Role::class)
+                            <x-slot:action>
+                                <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">
+                                    <x-icon name="plus" class="size-4" />
+                                    إنشاء دور
+                                </a>
+                            </x-slot:action>
+                        @endcan
+                    </x-empty-state>
+                </div>
+            @endif
         </div>
     </div>
 @endsection

@@ -3,22 +3,25 @@
 @section('title', 'تعديل دور')
 
 @section('content')
-    <div class="mx-auto max-w-7xl px-4 py-8">
-        <div class="mb-6">
-            <a
-                href="{{ route('admin.roles.index') }}"
-                class="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-                &larr; العودة إلى الأدوار
-            </a>
-            <h1 class="mt-2 text-2xl font-bold tracking-tight text-foreground">
-                تعديل الدور: {{ $role->name }}
-            </h1>
-        </div>
+    <div class="form-page">
+        <x-page-header
+            :title="'تعديل الدور: ' . $role->name"
+            :description="'تحديث اسم الدور أو صلاحياته.'"
+            back="{{ route('admin.roles.index') }}"
+            back-label="الأدوار"
+        />
 
-        @include('admin.roles._form', [
-            'role' => $role,
-            'rolePermissions' => $rolePermissions,
-        ])
+        @if (session('status'))
+            <x-alert class="mt-6" :dismissible="true">
+                {{ session('status') }}
+            </x-alert>
+        @endif
+
+        <div class="mt-8">
+            @include('admin.roles._form', [
+                'role' => $role,
+                'rolePermissions' => $rolePermissions,
+            ])
+        </div>
     </div>
 @endsection

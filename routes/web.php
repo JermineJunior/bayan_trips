@@ -4,10 +4,24 @@ use App\Http\Controllers\Account\PreferencesController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Models\Role;
 
 Route::get('/', function () {
-    return view('dashboard');
+    $stats = [
+        'users' => User::count(),
+        'active' => User::where('is_active', true)->count(),
+        'inactive' => User::where('is_active', false)->count(),
+        'roles' => Role::count(),
+    ];
+
+    $recentUsers = User::with('roles')->latest()->limit(6)->get();
+
+    return view('dashboard', [
+        'stats' => $stats,
+        'recentUsers' => $recentUsers,
+    ]);
 })->middleware(['auth'])->name('home');
 
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {

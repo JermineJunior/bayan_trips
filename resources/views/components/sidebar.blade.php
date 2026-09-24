@@ -1,79 +1,113 @@
-<aside
-    x-data="sidebar"
-    aria-label="القائمة الجانبية"
-    class="sticky top-0 flex h-screen shrink-0 flex-col border-e border-border bg-surface transition-[width] duration-200"
-    :class="collapsed ? 'w-16' : 'w-64'"
->
-    {{-- Brand --}}
-    <a
-        href="{{ route('home') }}"
-        class="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4"
-        :class="collapsed ? 'justify-center' : 'justify-start'"
-    >
-        @if ($logoUrl)
-            <img
-                src="{{ $logoUrl }}"
-                alt="{{ $appName }}"
-                class="size-8 shrink-0 rounded-full border border-border object-contain bg-background"
-            >
-        @endif
-        <span x-show="!collapsed" x-cloak class="truncate text-lg font-semibold text-foreground">
-            {{ $appName }}
-        </span>
-    </a>
+<div x-data="sidebar">
+    {{-- Mobile backdrop --}}
+    <div
+        x-show="$store.ui.sidebarOpen"
+        x-cloak
+        x-transition.opacity
+        @mousedown="$store.ui.sidebarOpen = false"
+        @touchstart.passive="$store.ui.sidebarOpen = false"
+        class="fixed inset-0 z-30 bg-foreground/20 backdrop-blur-[1px] lg:hidden"
+        aria-hidden="true"
+    ></div>
 
-    {{-- Navigation: each item declares the permission it requires and is
-         removed from the DOM entirely when the user lacks it. --}}
-    <nav class="flex-1 space-y-1 overflow-y-auto p-3">
-        <x-sidebar-link
+    <aside
+        aria-label="القائمة الجانبية"
+        class="sidebar-drawer fixed inset-y-0 start-0 z-40 flex h-dvh shrink-0 flex-col border-e border-border bg-surface lg:sticky lg:top-0 lg:h-screen"
+        :class="($store.ui.sidebarOpen ? 'open' : '') + (collapsed ? ' collapsed' : '')"
+    >
+        {{-- Brand --}}
+        <a
             href="{{ route('home') }}"
-            :active="request()->routeIs('home')"
-            label="لوحة التحكم"
-            icon="dashboard"
-        />
+            class="flex h-16 shrink-0 items-center gap-3 border-b border-border px-4"
+            :class="mobileOpen || !collapsed ? 'justify-start' : 'justify-center'"
+        >
+            @if ($logoUrl)
+                <img
+                    src="{{ $logoUrl }}"
+                    alt="{{ $appName }}"
+                    class="size-8 shrink-0 rounded-md border border-border object-contain bg-background p-0.5"
+                >
+            @else
+                <span
+                    class="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground"
+                >
+                    {{ mb_substr($appName, 0, 1) }}
+                </span>
+            @endif
+            <span
+                x-show="mobileOpen || !collapsed"
+                class="sidebar-label truncate text-[0.95rem] font-semibold text-foreground"
+            >
+                {{ $appName }}
+            </span>
+        </a>
 
-        @can('users.view')
+        {{-- Navigation: each item declares the permission it requires and is
+             removed from the DOM entirely when the user lacks it. --}}
+        <nav @click="$store.ui.sidebarOpen = false;" class="flex-1 space-y-1 overflow-y-auto p-3">
             <x-sidebar-link
-                href="{{ route('admin.users.index') }}"
-                :active="request()->routeIs('admin.users.*')"
-                label="المستخدمون"
-                icon="users"
+                href="{{ route('home') }}"
+                :active="request()->routeIs('home')"
+                label="لوحة التحكم"
+                icon="dashboard"
             />
-        @endcan
 
-        @can('roles.view')
-            <x-sidebar-link
-                href="{{ route('admin.roles.index') }}"
-                :active="request()->routeIs('admin.roles.*')"
-                label="الأدوار"
-                icon="roles"
-            />
-        @endcan
+            @can('users.view')
+                <x-sidebar-link
+                    href="{{ route('admin.users.index') }}"
+                    :active="request()->routeIs('admin.users.*')"
+                    label="المستخدمون"
+                    icon="users"
+                />
+            @endcan
 
-        @can('settings.edit')
-            <x-sidebar-link
-                href="{{ route('admin.settings.edit') }}"
-                :active="request()->routeIs('admin.settings.*')"
-                label="الإعدادات"
-                icon="settings"
-            />
-        @endcan
-    </nav>
+            @can('roles.view')
+                <x-sidebar-link
+                    href="{{ route('admin.roles.index') }}"
+                    :active="request()->routeIs('admin.roles.*')"
+                    label="الأدوار"
+                    icon="roles"
+                />
+            @endcan
 
-    {{-- Collapse toggle --}}
-    <button
-        type="button"
-        @click="toggle"
-        :aria-label="collapsed ? 'توسيع القائمة الجانبية' : 'طيّ القائمة الجانبية'"
-        class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        :class="collapsed ? 'mx-3 mb-3 justify-center' : 'mx-3 mb-3 justify-start'"
-    >
-        <svg x-show="!collapsed" class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="m9 18 6-6-6-6"></path>
-        </svg>
-        <svg x-show="collapsed" x-cloak class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="m15 18-6-6 6-6"></path>
-        </svg>
-        <span x-show="!collapsed" x-cloak>طيّ القائمة</span>
-    </button>
-</aside>
+            @can('settings.edit')
+                <x-sidebar-link
+                    href="{{ route('admin.settings.edit') }}"
+                    :active="request()->routeIs('admin.settings.*')"
+                    label="الإعدادات"
+                    icon="settings"
+                />
+            @endcan
+        </nav>
+
+        {{-- Collapse toggle (desktop) / brand hint (mobile) --}}
+        <div class="border-t border-border p-3">
+            <button
+                type="button"
+                @click="toggle"
+                :aria-label="collapsed ? 'توسيع القائمة الجانبية' : 'طيّ القائمة الجانبية'"
+                class="hidden w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:flex"
+                :class="collapsed ? 'justify-center' : 'justify-between'"
+            >
+                <svg
+                    :class="collapsed ? 'size-5 rotate-180' : 'size-5'"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="m11 17-5-5 5-5"></path>
+                    <path d="m18 17-5-5 5-5"></path>
+                </svg>
+                <span x-show="!collapsed" class="sidebar-label text-xs">طيّ القائمة</span>
+            </button>
+
+            <p class="px-3 py-2 text-center text-[0.6875rem] leading-4 text-muted-foreground lg:hidden">
+                {{ $appName }} · {{ date('Y') }}
+            </p>
+        </div>
+    </aside>
+</div>
