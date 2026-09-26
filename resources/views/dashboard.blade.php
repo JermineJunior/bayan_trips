@@ -9,11 +9,11 @@
             :description="'نظرة عامة على النظام — ' . now()->translatedFormat('l، j F Y')"
         />
 
-        <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6 xl:auto-rows-fr">
+        <div class="mt-8 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6 xl:auto-rows-fr">
             {{-- Featured: trips --}}
             @can('viewAny', App\Models\Trip::class)
                 <section
-                    class="card card-primary flex flex-col justify-between gap-4 overflow-hidden px-5 py-5 md:col-span-1 xl:col-span-1"
+                    class="card card-primary flex flex-col justify-between gap-4 overflow-hidden px-5 py-5 md:col-span-2 xl:col-span-2"
                     aria-label="الرحلات"
                 >
                     <div class="flex items-center justify-between">
@@ -48,7 +48,7 @@
             {{-- Vehicles --}}
             @can('viewAny', App\Models\Vehicle::class)
                 <section
-                    class="card flex flex-col justify-between gap-3 px-4 py-4 xl:col-span-2"
+                    class="card flex flex-col justify-between gap-3 px-4 py-4 xl:col-span-1"
                     aria-label="المركبات"
                 >
                     <div class="flex items-center justify-between">

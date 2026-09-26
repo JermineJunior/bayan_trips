@@ -110,7 +110,7 @@
 
                 <footer class="border-t border-border bg-surface/60">
                     <div class="px-4 py-4 text-center text-xs text-muted-foreground sm:px-6">
-                        © {{ date('Y') }} جميع الحقوق محفوظة لشركة بيان.
+                        جميع الحقوق محفوظة &copy;  لشركة بيان للبرمجيات. {{ date('Y')  }}
                     </div>
                 </footer>
             </div>
