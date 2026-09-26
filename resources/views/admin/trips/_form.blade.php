@@ -258,7 +258,7 @@
                         type="text"
                         list="trips-locations"
                         value="{{ old('from_location', $trip?->from_location) }}"
-                        placeholder="مثال: الرياض"
+                        placeholder="مثال: بحري"
                         required
                         class="input"
                     >
@@ -275,7 +275,7 @@
                         type="text"
                         list="trips-locations"
                         value="{{ old('to_location', $trip?->to_location) }}"
-                        placeholder="مثال: جدة"
+                        placeholder="مثال: الخرطوم"
                         required
                         class="input"
                     >

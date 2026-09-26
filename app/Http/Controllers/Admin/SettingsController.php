@@ -38,6 +38,10 @@ class SettingsController extends Controller
             $settings->set('logo_path', $path);
         }
 
+        $settings->set('company_phone', $request->filled('company_phone') ? $request->string('company_phone')->toString() : null);
+        $settings->set('company_location', $request->filled('company_location') ? $request->string('company_location')->toString() : null);
+        $settings->set('reports_message', $request->filled('reports_message') ? $request->string('reports_message')->toString() : null);
+
         return redirect()
             ->route('admin.settings.edit')
             ->with('status', 'تم تحديث الإعدادات.');

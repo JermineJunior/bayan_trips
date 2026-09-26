@@ -37,7 +37,7 @@
                     <dl class="space-y-4">
                         <div>
                             <dt class="label">تاريخ الرحلة</dt>
-                            <dd class="mt-1 text-sm text-foreground" dir="ltr">
+                            <dd class="mt-1 text-sm text-foreground" dir="rtl">
                                 {{ $trip->trip_date->format('Y-m-d') }}
                             </dd>
                         </div>

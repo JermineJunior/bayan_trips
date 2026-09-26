@@ -56,8 +56,8 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Share app-wide settings (name, logo) and the authenticated user's
-     * font-size preference with every view.
+     * Share app-wide settings (name, logo, company info) and the
+     * authenticated user's font-size preference with every view.
      *
      * Settings are cached by SettingsService; the font size is read straight
      * from the logged-in user (guests always fall back to the default size,
@@ -72,6 +72,9 @@ class AppServiceProvider extends ServiceProvider
             $view->with([
                 'appName' => $settings->get('app_name', config('app.name', 'Vibe')),
                 'logoUrl' => $logoPath !== null ? Storage::disk('public')->url($logoPath) : null,
+                'companyPhone' => $settings->get('company_phone'),
+                'companyLocation' => $settings->get('company_location'),
+                'reportsMessage' => $settings->get('reports_message'),
                 'userFontSize' => optional(auth()->user())->font_size ?? 'default',
             ]);
         });

@@ -13,7 +13,7 @@
             {{-- Featured: trips --}}
             @can('viewAny', App\Models\Trip::class)
                 <section
-                    class="card card-primary flex flex-col justify-between gap-6 overflow-hidden px-6 py-6 md:col-span-2 xl:col-span-2 xl:row-span-2"
+                    class="card card-primary flex flex-col justify-between gap-4 overflow-hidden px-5 py-5 md:col-span-1 xl:col-span-1"
                     aria-label="الرحلات"
                 >
                     <div class="flex items-center justify-between">
@@ -30,15 +30,15 @@
                     </div>
 
                     <div>
-                        <p dir="ltr" class="text-6xl font-semibold leading-none tabular-nums">
+                        <p dir="ltr" class="text-4xl font-semibold leading-none tabular-nums">
                             {{ number_format($stats['trips']) }}
                         </p>
                         <p class="mt-2 text-sm text-primary-foreground/80">رحلة مسجلة في النظام</p>
                     </div>
 
-                    <div class="rounded-lg bg-primary-foreground/10 px-4 py-3">
+                    <div class="rounded-lg bg-primary-foreground/10 px-4 py-2.5">
                         <p class="text-xs text-primary-foreground/80">رحلات هذا الشهر</p>
-                        <p dir="ltr" class="mt-1 text-2xl font-semibold tabular-nums">
+                        <p dir="ltr" class="mt-1 text-xl font-semibold tabular-nums">
                             {{ number_format($monthTotals->trip_count) }}
                         </p>
                     </div>
@@ -48,7 +48,7 @@
             {{-- Vehicles --}}
             @can('viewAny', App\Models\Vehicle::class)
                 <section
-                    class="card flex flex-col justify-between gap-4 px-5 py-5 xl:col-span-2"
+                    class="card flex flex-col justify-between gap-3 px-4 py-4 xl:col-span-2"
                     aria-label="المركبات"
                 >
                     <div class="flex items-center justify-between">
@@ -68,7 +68,7 @@
                     <a
                         href="{{ route('admin.vehicles.index') }}"
                         dir="ltr"
-                        class="block text-3xl font-semibold tabular-nums text-foreground transition-colors hover:text-primary"
+                        class="block text-2xl font-semibold tabular-nums text-foreground transition-colors hover:text-primary"
                     >
                         {{ number_format($stats['vehicles']) }}
                     </a>
@@ -78,7 +78,7 @@
             {{-- Drivers --}}
             @can('viewAny', App\Models\Driver::class)
                 <section
-                    class="card flex flex-col justify-between gap-4 px-5 py-5 xl:col-span-1"
+                    class="card flex flex-col justify-between gap-3 px-4 py-4 xl:col-span-1"
                     aria-label="السائقون"
                 >
                     <div class="flex items-center justify-between">
@@ -98,7 +98,7 @@
                     <a
                         href="{{ route('admin.drivers.index') }}"
                         dir="ltr"
-                        class="block text-3xl font-semibold tabular-nums text-foreground transition-colors hover:text-primary"
+                        class="block text-2xl font-semibold tabular-nums text-foreground transition-colors hover:text-primary"
                     >
                         {{ number_format($stats['drivers']) }}
                     </a>
@@ -108,7 +108,7 @@
             {{-- Customers --}}
             @can('viewAny', App\Models\Customer::class)
                 <section
-                    class="card flex flex-col justify-between gap-4 px-5 py-5 xl:col-span-1"
+                    class="card flex flex-col justify-between gap-3 px-4 py-4 xl:col-span-2"
                     aria-label="العملاء"
                 >
                     <div class="flex items-center justify-between">
@@ -128,7 +128,7 @@
                     <a
                         href="{{ route('admin.customers.index') }}"
                         dir="ltr"
-                        class="block text-3xl font-semibold tabular-nums text-foreground transition-colors hover:text-primary"
+                        class="block text-2xl font-semibold tabular-nums text-foreground transition-colors hover:text-primary"
                     >
                         {{ number_format($stats['customers']) }}
                     </a>
@@ -137,7 +137,7 @@
 
             {{-- This month's totals --}}
             @can('viewAny', App\Models\Trip::class)
-                <section class="card overflow-hidden xl:col-span-4" aria-label="إجماليات الشهر الحالي">
+                <section class="card overflow-hidden xl:col-span-6" aria-label="إجماليات الشهر الحالي">
                     <div class="flex items-center justify-between border-b border-border px-5 py-4">
                         <div>
                             <h2 class="section-title">إجماليات هذا الشهر</h2>
