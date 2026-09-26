@@ -108,6 +108,77 @@
                 />
             @endcan
 
+            {{-- Reports section: every report shares the single reports.view
+                 permission. The section is a collapsible accordion; its state
+                 is persisted, and it stays expanded in narrow mode so the
+                 report icons remain reachable. --}}
+            @can('reports.view')
+                <button
+                    type="button"
+                    @click="toggleReports"
+                    x-show="mobileOpen || !collapsed"
+                    :aria-expanded="reportsOpen ? 'true' : 'false'"
+                    aria-controls="sidebar-reports"
+                    class="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-muted-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+                >
+                    <span>التقارير</span>
+                    <svg
+                        :class="reportsOpen ? 'rotate-180' : ''"
+                        class="size-4 shrink-0 transition-transform"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path d="m6 9 6 6 6-6"></path>
+                    </svg>
+                </button>
+
+                <div
+                    id="sidebar-reports"
+                    x-show="reportsOpen || (collapsed && !mobileOpen)"
+                    class="space-y-1"
+                >
+                    <x-sidebar-link
+                        href="{{ route('reports.vehicles.form') }}"
+                        :active="request()->routeIs('reports.vehicles.*')"
+                        label="المركبات"
+                        icon="car"
+                    />
+
+                    <x-sidebar-link
+                        href="{{ route('reports.drivers.form') }}"
+                        :active="request()->routeIs('reports.drivers.*')"
+                        label="السائقون"
+                        icon="id-card"
+                    />
+
+                    <x-sidebar-link
+                        href="{{ route('reports.customers.form') }}"
+                        :active="request()->routeIs('reports.customers.*')"
+                        label="العملاء"
+                        icon="contact"
+                    />
+
+                    <x-sidebar-link
+                        href="{{ route('reports.trip-types.form') }}"
+                        :active="request()->routeIs('reports.trip-types.*')"
+                        label="أنواع الرحلات"
+                        icon="route"
+                    />
+
+                    <x-sidebar-link
+                        href="{{ route('reports.routes.form') }}"
+                        :active="request()->routeIs('reports.routes.*')"
+                        label="المسارات"
+                        icon="activity"
+                    />
+                </div>
+            @endcan
+
             @can('users.view')
                 <x-sidebar-link
                     href="{{ route('admin.users.index') }}"

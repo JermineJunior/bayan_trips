@@ -1,0 +1,1 @@
+@include('reports.partials.print_page')

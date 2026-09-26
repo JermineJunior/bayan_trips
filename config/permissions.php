@@ -76,4 +76,8 @@ return [
         'trips.delete',
     ],
 
+    'reports' => [
+        'reports.view',
+    ],
+
 ];

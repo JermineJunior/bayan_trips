@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\TripTypeController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VehicleController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])
@@ -183,4 +184,22 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
     Route::get('preferences', [PreferencesController::class, 'edit'])->name('preferences.edit');
     Route::put('preferences', [PreferencesController::class, 'update'])->name('preferences.update');
+});
+
+// Read-only reports. A single permission gates every report screen; each
+// report is split into a .form route (filter page) and a .result route
+// (the table). The result route carries ?print=1 for the print view so the
+// filter query string is kept.
+Route::middleware(['auth', 'can:reports.view'])->name('reports.')->prefix('reports')->group(function () {
+    Route::get('vehicles', [ReportController::class, 'vehiclesForm'])->name('vehicles.form');
+    Route::get('vehicles/result', [ReportController::class, 'vehiclesResult'])->name('vehicles.result');
+    Route::get('drivers', [ReportController::class, 'driversForm'])->name('drivers.form');
+    Route::get('drivers/result', [ReportController::class, 'driversResult'])->name('drivers.result');
+    Route::get('customers', [ReportController::class, 'customersForm'])->name('customers.form');
+    Route::get('customers/result', [ReportController::class, 'customersResult'])->name('customers.result');
+    Route::get('trip-types', [ReportController::class, 'tripTypesForm'])->name('trip-types.form');
+    Route::get('trip-types/result', [ReportController::class, 'tripTypesResult'])->name('trip-types.result');
+    Route::get('routes', [ReportController::class, 'routesForm'])->name('routes.form');
+    Route::get('routes/result', [ReportController::class, 'routesResult'])->name('routes.result');
+    Route::get('trips/{trip}', [ReportController::class, 'trip'])->name('trips.show');
 });

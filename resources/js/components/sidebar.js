@@ -12,6 +12,25 @@ export default function () {
             return this.$store.ui.sidebarOpen;
         },
 
+        // Reports section accordion. Persisted so the choice survives reloads.
+        reportsOpen: (() => {
+            try {
+                return JSON.parse(localStorage.getItem('sidebar-reports-open') || 'true') !== false;
+            } catch {
+                return true;
+            }
+        })(),
+
+        toggleReports() {
+            this.reportsOpen = !this.reportsOpen;
+
+            try {
+                localStorage.setItem('sidebar-reports-open', JSON.stringify(this.reportsOpen));
+            } catch {
+                // Storage unavailable — the toggle still applies for this session.
+            }
+        },
+
         toggle() {
             this.collapsed = !this.collapsed;
 

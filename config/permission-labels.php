@@ -20,6 +20,7 @@ return [
         'customers' => 'العملاء',
         'trip_types' => 'أنواع الرحلات',
         'trips' => 'الرحلات',
+        'reports' => 'التقارير',
     ],
 
     /*
@@ -61,6 +62,7 @@ return [
         'trips.create' => 'إضافة رحلة',
         'trips.edit' => 'تعديل الرحلات',
         'trips.delete' => 'حذف الرحلات',
+        'reports.view' => 'عرض التقارير',
     ],
 
 ];
