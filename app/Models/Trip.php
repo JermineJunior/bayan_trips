@@ -100,4 +100,25 @@ class Trip extends Model
                     ->orWhere('notes', 'like', "%{$v}%");
             }));
     }
+
+    /**
+     * Apply the totals aggregation shared by the trips index and every report.
+     * The report results also want the per-trip averages, opt in via $withAvgs.
+     */
+    public function scopeAggregateTotals(Builder $query, bool $withAvgs = false): Builder
+    {
+        $query->selectRaw('COUNT(*) AS trip_count')
+            ->selectRaw('COALESCE(SUM(price), 0) AS total_price')
+            ->selectRaw('COALESCE(SUM(total_expenses), 0) AS total_expenses')
+            ->selectRaw('COALESCE(SUM(net_amount), 0) AS total_net')
+            ->selectRaw('COALESCE(SUM(driver_amount), 0) AS total_driver')
+            ->selectRaw('COALESCE(SUM(company_amount), 0) AS total_company');
+
+        if ($withAvgs) {
+            $query->selectRaw('ROUND(AVG(price), 2) AS avg_price')
+                ->selectRaw('ROUND(AVG(net_amount), 2) AS avg_net');
+        }
+
+        return $query;
+    }
 }

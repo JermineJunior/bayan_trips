@@ -148,7 +148,7 @@
                         </a>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-px bg-border sm:grid-cols-4">
+                    <div class="grid grid-cols-2 gap-px bg-border sm:grid-cols-5 borderad">
                         <div class="bg-surface px-5 py-4 sm:px-6">
                             <p class="text-sm text-muted-foreground">عدد الرحلات</p>
                             <p dir="ltr" class="mt-1.5 text-xl font-semibold tabular-nums text-foreground">
@@ -160,6 +160,13 @@
                             <p class="text-sm text-muted-foreground">إجمالي السعر</p>
                             <p dir="ltr" class="mt-1.5 text-xl font-semibold tabular-nums text-foreground">
                                 {{ format_number($monthTotals->total_price) }}
+                            </p>
+                        </div>
+
+                        <div class="bg-surface px-5 py-4 sm:px-6">
+                            <p class="text-sm text-muted-foreground">إجمالي المصروفات</p>
+                            <p dir="ltr" class="mt-1.5 text-xl font-semibold tabular-nums text-foreground">
+                                {{ format_number($monthTotals->total_expenses) }}
                             </p>
                         </div>
 
@@ -205,7 +212,7 @@
                                     <th>المركبة</th>
                                     <th>السائق</th>
                                     <th>من ← إلى</th>
-                                    <th class="text-end">الصافي</th>
+                                    <th class="text-right">الصافي</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -224,7 +231,7 @@
                                                 {{ $trip->to_location }}
                                             </p>
                                         </td>
-                                        <td dir="ltr" class="whitespace-nowrap text-end font-medium tabular-nums text-foreground">
+                                        <td dir="ltr" class="whitespace-nowrap text-right font-medium tabular-nums text-foreground">
                                             {{ format_number($trip->net_amount) }}
                                         </td>
                                     </tr>

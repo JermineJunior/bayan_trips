@@ -21,17 +21,24 @@
         <div class="mt-8 space-y-4">
             @include('reports.partials.date_range')
 
-            @if ($rows->isNotEmpty())
+            @if ($trips->isNotEmpty())
                 @include('reports.partials.totals', ['totals' => $totals])
 
-                <div class="table-wrap">
-                    <div class="overflow-x-auto">
-                        @include('reports.partials.grouped_table', [
-                            'rows' => $rows,
-                            'totals' => $totals,
-                            'showAvgs' => $meta['showAvgs'],
-                        ])
-                    </div>
+                <div class="space-y-4">
+                    @foreach ($trips as $trip)
+                        <section class="card">
+                            <header class="panel-head">
+                                <h2 class="section-title">رحلة رقم {{ $trip->id }}</h2>
+                                <p class="section-desc">
+                                    {{ $trip->trip_date->translatedFormat('l، j F Y') }}
+                                </p>
+                            </header>
+
+                            <div class="panel-body">
+                                @include('reports.partials.trip_detail', ['trip' => $trip])
+                            </div>
+                        </section>
+                    @endforeach
                 </div>
             @else
                 <div class="table-wrap">

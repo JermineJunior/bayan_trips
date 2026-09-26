@@ -47,5 +47,15 @@ export default function () {
                 // Storage unavailable — the collapse still applies for this session.
             }
         },
+
+        // Logo acts as the sidebar toggle: collapse/expand the desktop rail, and
+        // dismiss the off-canvas drawer on small screens.
+        toggleSidebar() {
+            if (window.matchMedia('(min-width: 64rem)').matches) {
+                this.toggle();
+            } else {
+                this.$store.ui.sidebarOpen = false;
+            }
+        },
     };
 }

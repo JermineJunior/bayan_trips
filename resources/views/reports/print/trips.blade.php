@@ -15,16 +15,21 @@
             @include('reports.partials.date_range')
         </div>
 
-        @if ($rows->isEmpty())
+        @if ($trips->isEmpty())
             <p class="py-8 text-center text-sm text-neutral-500">{{ $meta['empty'] }}</p>
         @else
-            <div class="mt-4">
-                @include('reports.partials.grouped_table', [
-                    'rows' => $rows,
-                    'totals' => $totals,
-                    'showAvgs' => $meta['showAvgs'],
-                ])
-            </div>
+            @foreach ($trips as $trip)
+                <div class="mt-6 break-inside-avoid page-break-inside-avoid">
+                    <h3 class="mb-2 border-b border-neutral-300 pb-1 text-sm font-bold text-neutral-900">
+                        رحلة رقم {{ $trip->id }}
+                        <span class="font-normal text-neutral-600">
+                            — {{ $trip->trip_date->translatedFormat('l، j F Y') }}
+                        </span>
+                    </h3>
+
+                    @include('reports.partials.trip_detail', ['trip' => $trip])
+                </div>
+            @endforeach
         @endif
     </section>
 

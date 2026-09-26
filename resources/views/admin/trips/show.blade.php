@@ -99,21 +99,21 @@
                     <dl class="space-y-4">
                         <div>
                             <dt class="label">سعر الرحلة</dt>
-                            <dd dir="ltr" class="mt-1 text-sm font-medium tabular-nums text-foreground">
+                            <dd dir="ltr" class="mt-1 text-right text-sm font-medium tabular-nums text-foreground">
                                 {{ format_number($trip->price) }}
                             </dd>
                         </div>
 
                         <div>
                             <dt class="label">إجمالي المصروفات</dt>
-                            <dd dir="ltr" class="mt-1 text-sm font-medium tabular-nums text-foreground">
+                            <dd dir="ltr" class="mt-1 text-right text-sm font-medium tabular-nums text-foreground">
                                 {{ format_number($trip->total_expenses) }}
                             </dd>
                         </div>
 
                         <div class="border-t border-border pt-4">
                             <dt class="label">الصافي</dt>
-                            <dd dir="ltr" class="mt-1 text-sm font-semibold tabular-nums text-foreground">
+                            <dd dir="ltr" class="mt-1 text-right text-sm font-semibold tabular-nums text-foreground">
                                 {{ format_number($trip->net_amount) }}
                             </dd>
                         </div>
@@ -125,14 +125,14 @@
                                     ({{ format_number($trip->driver_percentage) }}%)
                                 </span>
                             </dt>
-                            <dd dir="ltr" class="mt-1 text-sm font-medium tabular-nums text-foreground">
+                            <dd dir="ltr" class="mt-1 text-right text-sm font-medium tabular-nums text-foreground">
                                 {{ format_number($trip->driver_amount) }}
                             </dd>
                         </div>
 
                         <div>
                             <dt class="label">حصة الشركة</dt>
-                            <dd dir="ltr" class="mt-1 text-sm font-medium tabular-nums text-foreground">
+                            <dd dir="ltr" class="mt-1 text-right text-sm font-medium tabular-nums text-foreground">
                                 {{ format_number($trip->company_amount) }}
                             </dd>
                         </div>
@@ -155,7 +155,7 @@
                                 <tr>
                                     <th class="w-10 text-center">#</th>
                                     <th>الوصف</th>
-                                    <th class="text-end">المبلغ</th>
+                                    <th class="text-right">المبلغ</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -163,7 +163,7 @@
                                     <tr>
                                         <td class="text-center text-muted-foreground">{{ $i + 1 }}</td>
                                         <td class="text-foreground">{{ $expense->description }}</td>
-                                        <td dir="ltr" class="whitespace-nowrap text-end tabular-nums text-foreground">
+                                        <td dir="ltr" class="whitespace-nowrap text-right tabular-nums text-foreground">
                                             {{ format_number($expense->amount) }}
                                         </td>
                                     </tr>

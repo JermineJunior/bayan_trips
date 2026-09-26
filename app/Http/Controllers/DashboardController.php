@@ -27,6 +27,7 @@ class DashboardController extends Controller
             ->whereDate('trip_date', '<=', now()->endOfMonth())
             ->selectRaw('COUNT(*) AS trip_count')
             ->selectRaw('COALESCE(SUM(price), 0) AS total_price')
+            ->selectRaw('COALESCE(SUM(total_expenses), 0) AS total_expenses')
             ->selectRaw('COALESCE(SUM(net_amount), 0) AS total_net')
             ->selectRaw('COALESCE(SUM(company_amount), 0) AS total_company')
             ->first();

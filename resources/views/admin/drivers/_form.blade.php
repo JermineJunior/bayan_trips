@@ -111,10 +111,10 @@
                             step="0.01"
                             min="0"
                             max="100"
-                            dir="ltr"
+                            dir="rtl"
                             class="input"
                         >
-                        <span class="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">%</span>
+                        <span class="pointer-events-none absolute start-8 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">%</span>
                     </div>
                     <p class="hint">القيمة بين 0 و 100 بحد أقصى منزلتين عشريتين.</p>
                     @error('default_percentage')

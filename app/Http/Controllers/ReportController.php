@@ -79,6 +79,16 @@ class ReportController extends Controller
             'showAvgs' => true,
             'empty' => 'لم نعثر على أي مسار يطابق عوامل التصفية.',
         ],
+        'trips' => [
+            'title' => 'تقرير الرحلات والمصروفات',
+            'description' => 'عرض كل رحلة مع مصروفاتها وإجمالياتها داخل الفترة المحددة.',
+            'name' => 'الرحلة',
+            'icon' => 'truck',
+            'filters' => ['date_from', 'date_to'],
+            'print' => 'reports.print.trips',
+            'showAvgs' => false,
+            'empty' => 'لم نعثر على أي رحلة تطابق عوامل التصفية.',
+        ],
     ];
 
     /**
@@ -182,6 +192,27 @@ class ReportController extends Controller
     }
 
     /**
+     * Display the trips report filter form (no aggregate queries).
+     */
+    public function tripsForm(Request $request): View
+    {
+        $this->authorize('reports.view');
+
+        return $this->form('trips');
+    }
+
+    /**
+     * Display the trips report results: every trip in the date range with
+     * its expenses and per-trip totals, plus the overall totals bar.
+     */
+    public function tripsResult(Request $request): View
+    {
+        $this->authorize('reports.view');
+
+        return $this->result('trips', $request);
+    }
+
+    /**
      * Display the full breakdown of a single trip.
      */
     public function trip(Request $request, Trip $trip): View
@@ -216,7 +247,7 @@ class ReportController extends Controller
     }
 
     /**
-     * Shared pipeline for the five grouped report results. Renders the
+     * Shared pipeline for the grouped report results. Renders the
      * on-screen or the print view depending on the print=1 query flag; both
      * reuse the same grouped-table partial so they never drift apart.
      */
@@ -225,20 +256,45 @@ class ReportController extends Controller
         $meta = self::REPORTS[$kind];
         $filter = $this->validatedFilter($request, $kind);
 
-        $vehicles = Vehicle::orderBy('plate_number')->get();
-        $drivers = Driver::orderBy('name')->get();
-        $customers = Customer::orderBy('name')->get();
-        $tripTypes = TripType::orderByDesc('is_default')->orderBy('name')->get();
+        if ($kind === 'trips') {
+            $trips = Trip::query()
+                ->filter($filter)
+                ->with(['tripType', 'customer', 'vehicle', 'driver', 'expenses'])
+                ->orderByDesc('trip_date')
+                ->orderByDesc('id')
+                ->get();
+
+            return view($request->boolean('print') ? $meta['print'] : 'reports.'.$kind.'.result', [
+                'meta' => $meta,
+                'trips' => $trips,
+                'totals' => $this->totals($filter),
+                'filterSummary' => $this->filterSummary($filter, []),
+                'generatedAt' => now()->translatedFormat('l، j F Y - H:i'),
+                'printUrl' => $request->fullUrlWithQuery(['print' => 1]),
+                'reset' => route('reports.'.$kind.'.form'),
+            ]);
+        }
+
+        // Keyed maps (id => model) loaded with trashed records so every row's
+        // label resolves from memory and soft-deleted names still show for
+        // historical trips. Loaded once per request, reused by the grouped
+        // rows and the filter summary — no per-row queries.
+        $maps = [
+            'vehicle' => Vehicle::withTrashed()->orderBy('plate_number')->get()->keyBy('id'),
+            'driver' => Driver::withTrashed()->orderBy('name')->get()->keyBy('id'),
+            'customer' => Customer::withTrashed()->orderBy('name')->get()->keyBy('id'),
+            'trip-type' => TripType::orderByDesc('is_default')->orderBy('name')->get()->keyBy('id'),
+        ];
 
         return view($request->boolean('print') ? $meta['print'] : 'reports.'.$kind.'.result', [
             'meta' => $meta,
-            'rows' => $this->groupRows($kind, $filter, $customers),
+            'rows' => $this->groupRows($kind, $filter, $maps),
             'totals' => $this->totals($filter),
-            'vehicles' => $vehicles,
-            'drivers' => $drivers,
-            'customers' => $customers,
-            'tripTypes' => $tripTypes,
-            'filterSummary' => $this->filterSummary($filter, $vehicles, $drivers, $customers, $tripTypes),
+            'vehicles' => $maps['vehicle'],
+            'drivers' => $maps['driver'],
+            'customers' => $maps['customer'],
+            'tripTypes' => $maps['trip-type'],
+            'filterSummary' => $this->filterSummary($filter, $maps),
             'generatedAt' => now()->translatedFormat('l، j F Y - H:i'),
             'printUrl' => $request->fullUrlWithQuery(['print' => 1]),
             'reset' => route('reports.'.$kind.'.form'),
@@ -312,7 +368,7 @@ class ReportController extends Controller
      * Grouped rows for the given report kind, each shaped as a display array
      * with a title, an optional link into the trips index, and the money sums.
      */
-    private function groupRows(string $kind, array $filter, Collection $customers): Collection
+    private function groupRows(string $kind, array $filter, array $maps): Collection
     {
         $meta = self::REPORTS[$kind];
         $base = Trip::query()->filter($filter);
@@ -338,11 +394,11 @@ class ReportController extends Controller
 
         $key = $meta['column'];
 
-        return $rows->map(function ($row) use ($meta, $key, $filter, $customers): array {
+        return $rows->map(function ($row) use ($meta, $key, $filter, $maps): array {
             $id = $row->{$key};
 
             return [
-                'title' => $this->groupLabel($meta['group'], $id, $customers),
+                'title' => $this->groupLabel($meta['group'], $id, $maps),
                 'link' => $id === null ? null : route('admin.trips.index', $filter + [$key => $id]),
             ] + $this->displayColumns($row, false);
         });
@@ -362,18 +418,21 @@ class ReportController extends Controller
     }
 
     /**
-     * Arabic label for a group. Soft-deleted records still resolve by id;
-     * trips without a customer fold into a fixed placeholder group.
+     * Arabic label for a group. All lookups resolve from the preloaded
+     * maps (built with trashed records), so soft-deleted names still appear
+     * and no extra query runs per grouped row.
+     *
+     * @param  array<string, \Illuminate\Support\Collection>  $maps
      */
-    private function groupLabel(string $group, mixed $id, Collection $customers): string
+    private function groupLabel(string $group, mixed $id, array $maps): string
     {
         return match ($group) {
-            'vehicle' => (string) $id ? Vehicle::withTrashed()->find($id)?->label : '—',
-            'driver' => (string) $id ? Driver::withTrashed()->find($id)?->name : '—',
+            'vehicle' => (string) $id ? ($maps['vehicle']->get((int) $id)?->label ?? '—') : '—',
+            'driver' => (string) $id ? ($maps['driver']->get((int) $id)?->name ?? '—') : '—',
             'customer' => $id === null
                 ? 'بدون عميل'
-                : ($customers->firstWhere('id', (int) $id)?->name ?? Customer::withTrashed()->find($id)?->name ?? '—'),
-            'trip-type' => (string) $id ? TripType::find($id)?->name : '—',
+                : ($maps['customer']->get((int) $id)?->name ?? '—'),
+            'trip-type' => (string) $id ? ($maps['trip-type']->get((int) $id)?->name ?? '—') : '—',
             default => '—',
         };
     }
@@ -406,19 +465,13 @@ class ReportController extends Controller
     {
         return Trip::query()
             ->filter($filter)
-            ->selectRaw('COUNT(*) AS trip_count')
-            ->selectRaw('COALESCE(SUM(price), 0) AS total_price')
-            ->selectRaw('COALESCE(SUM(total_expenses), 0) AS total_expenses')
-            ->selectRaw('COALESCE(SUM(net_amount), 0) AS total_net')
-            ->selectRaw('COALESCE(SUM(driver_amount), 0) AS total_driver')
-            ->selectRaw('COALESCE(SUM(company_amount), 0) AS total_company')
-            ->selectRaw('ROUND(AVG(price), 2) AS avg_price')
-            ->selectRaw('ROUND(AVG(net_amount), 2) AS avg_net')
+            ->aggregateTotals(true)
             ->first();
     }
 
     /**
-     * Aggregate expressions shared by grouped rows and the totals query.
+     * Aggregate expressions carried by every grouped row; the route report
+     * also carries the two averages.
      */
     private function aggregateColumns(bool $withAvgs): string
     {
@@ -439,9 +492,10 @@ class ReportController extends Controller
     /**
      * Human-readable summary of the active filters, for the print footer.
      *
+     * @param  array<string, \Illuminate\Support\Collection>  $maps
      * @return array<int, string>
      */
-    private function filterSummary(array $filter, Collection $vehicles, Collection $drivers, Collection $customers, Collection $tripTypes): array
+    private function filterSummary(array $filter, array $maps): array
     {
         $parts = [];
 
@@ -457,13 +511,18 @@ class ReportController extends Controller
                 continue;
             }
 
-            $label = match ($key) {
-                'vehicle_id' => $vehicles->firstWhere('id', (int) $filter[$key])?->label,
-                'driver_id' => $drivers->firstWhere('id', (int) $filter[$key])?->name,
-                'customer_id' => $customers->firstWhere('id', (int) $filter[$key])?->name,
-                'trip_type_id' => $tripTypes->firstWhere('id', (int) $filter[$key])?->name,
+            $mapKey = match ($key) {
+                'vehicle_id' => 'vehicle',
+                'driver_id' => 'driver',
+                'customer_id' => 'customer',
+                'trip_type_id' => 'trip-type',
                 default => null,
             };
+
+            $label = $mapKey !== null
+                ? $maps[$mapKey]->get((int) $filter[$key])?->name
+                    ?? $maps[$mapKey]->get((int) $filter[$key])?->label
+                : null;
 
             $parts[] = $prefix.($label ?? $filter[$key]);
         }

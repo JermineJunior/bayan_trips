@@ -45,6 +45,13 @@
                     <button type="submit" class="btn btn-secondary">
                         بحث
                     </button>
+
+                    @if (request('search'))
+                        <a href="{{ route('admin.vehicles.index') }}" class="btn btn-ghost">
+                            <x-icon name="x" class="size-4" />
+                            مسح البحث
+                        </a>
+                    @endif
                 </div>
             </form>
 

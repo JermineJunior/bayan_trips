@@ -201,5 +201,7 @@ Route::middleware(['auth', 'can:reports.view'])->name('reports.')->prefix('repor
     Route::get('trip-types/result', [ReportController::class, 'tripTypesResult'])->name('trip-types.result');
     Route::get('routes', [ReportController::class, 'routesForm'])->name('routes.form');
     Route::get('routes/result', [ReportController::class, 'routesResult'])->name('routes.result');
+    Route::get('trips', [ReportController::class, 'tripsForm'])->name('trips.form');
+    Route::get('trips/result', [ReportController::class, 'tripsResult'])->name('trips.result');
     Route::get('trips/{trip}', [ReportController::class, 'trip'])->name('trips.show');
 });
